@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { useState, useEffect } from "react"
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+
+  const [movies, setMovies] = useState([])
+  const [tvOrMovie, setTvOrMovie] = useState("movie")
+
+  useEffect(() => {
+    const fetcher = async () => {
+      const options = {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+        }
+      }
+      const apiKey = import.meta.env.VITE_MOVIE_API_KEY
+      // console.log(apiKey);
+      const response = await fetch(`https://api.themoviedb.org/3/discover/${tvOrMovie}?api_key=${apiKey}&language=en-US&include_video=true`, options);
+
+      const data = await response.json();
+      // console.log(data.results);
+      setMovies(data.results);
+    };
+
+    fetcher();
+  }, [tvOrMovie])
+
+  function MovieCard({ movie }) {
+    console.log(movie);
+    return (
+      <div className="movie-card">
+        <img src={'https://image.tmdb.org/t/p/w500' + movie['poster_path']} alt={movie.title} className="movie-poster" />
+      </div>
+    )
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className='App'>
+      <div className='NavBar'>
+        <h1>Not Netflix</h1>
+        <div className='NavBarLinks'>
+        <button onClick={() => setTvOrMovie('movie')}>Movies</button>
+        <button onClick={() => setTvOrMovie('tv')}>TV Shows</button>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      
+      <h2> New Releases</h2>
+      <div className='movieContainer'>
+        {
+          movies.map((movie, index) => {
+            return (
+              <MovieCard movie={movie} key={index} />
+            )
+          }
+          )
+        }
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
-export default App
+
+
