@@ -1,26 +1,104 @@
-.App{
+body {
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: black;
+  }
+  
+  .App {
+    box-sizing: border-box;
+    text-align: center;
+    max-width: 100%;
     width: 98vw;
-}
-
-h1{
-    width: 100px;
-    height: 100px;
-    background-color: black;
-    margin-left: 1rem;;
-    color: red;
-}
-
-.movieContainer{
+    overflow-x: hidden;
+    margin: 0 10px;
+  }
+  
+  .NavBar {
+    background-color: #000;
+    color: #fff;
+    padding: 20px 0;
+  }
+  
+  .NavBar h1 {
     display: flex;
-    justify-content: center;
-    overflow-x: scroll;
-    min-width: max-content;
-    width: 100vw;
-}
+    align-items: flex-start;    
+    margin: 0;
+    color: red;
+  }
+  
+  .NavBarLinks {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 10px;
+  }
+  
+  h2{
+    display: flex;
+    align-items: flex-start;
+    color: white;
+  }
 
-.movie{
+  .NavBarLinks button {
+    background-color: transparent;
+    color: red;
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 16px;
+  }
+  
+  .NavBarLinks button:hover {
+    text-decoration: underline;
+  }
+  
+  .movieContainer {
+    display: flex;
+    overflow-x: auto;
+    max-width: 100vw;
+    flex-wrap: nowrap;
+    gap: 20px;
+    padding: 1rem 0;
+    margin: 5px 0;
+    scrollbar-color: red grey;
+    scrollbar-width: thin;
+    color: white;
+  }
+  
+  .movie-card {
+    flex: 0 0 auto;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .movie-poster {
     width: 100px;
-    height: 100px;
-    background-color: black;
-    margin-left: 1rem;
-}
+    height: 150px;
+  }
+
+  .searchBar {
+    display: flex;
+    align-items: center;
+  }
+  
+  .searchBar input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 5px;
+    width: 200px;
+  }
+  
+  .searchBar button {
+    padding: 8px 16px;
+    background-color: #e50914;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .searchBar button:hover {
+    background-color: #d30812;
+  }  
