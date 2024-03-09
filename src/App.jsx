@@ -15,6 +15,7 @@ export default function App() {
         accept: 'application/json',
       }
     };
+    
     const apiKey = import.meta.env.VITE_MOVIE_API_KEY;
 
     const fetchMovies = async () => {
