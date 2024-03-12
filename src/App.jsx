@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import './App.css';
+import ReactPlayer from 'react-player'
 
 export default function App() {
+  const apiKey = import.meta.env.VITE_MOVIE_API_KEY;
   const [movies, setMovies] = useState([]);
   const [tvOrMovie, setTvOrMovie] = useState("movie");
   const [sciMovies, setSciMovies] = useState([]);
   const [comedyMovies, setComedyMovies] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [trailerUrl, setTrailerUrl] = useState('');
 
   useEffect(() => {
     const options = {
@@ -15,11 +18,15 @@ export default function App() {
         accept: 'application/json',
       }
     };
-    
-    const apiKey = import.meta.env.VITE_MOVIE_API_KEY;
+
+    const searchMovies = async () => {
+      const response = await fetch(`https://api.themoviedb.org/3/search/${tvOrMovie}?api_key=${apiKey}&language=en-US&query=${searchQuery}&include_video=true`, options);
+      const data = await response.json();
+      setMovies(data.results);
+    };
 
     const fetchMovies = async () => {
-      const response = await fetch(`https://api.themoviedb.org/3/search/${tvOrMovie}?api_key=${apiKey}&language=en-US&query=${searchQuery}&include_video=true`, options);
+      const response = await fetch(`https://api.themoviedb.org/3/discover/${tvOrMovie}?api_key=${apiKey}&language=en-US&include_video=true`, options);
       const data = await response.json();
       setMovies(data.results);
     };
@@ -38,27 +45,26 @@ export default function App() {
     };
 
     if (searchQuery) {
-      fetchMovies();
+      searchMovies();
     } else {
       fetchSciMovies();
       fetchComedyMovies();
+      fetchMovies();
     }
   }, [searchQuery, tvOrMovie]);
 
-  function MovieCard({ movie }) {
-    const playTrailer = () => {
-      if (movie.trailerUrl) {
-        window.open(movie.trailerUrl, "_blank");
-      }
-    };
+  const playTrailer = (movieId) => {
+    fetchTrailerUrl(movieId);
+  };
 
-    return (
-      <div className="movie-card">
-        <img src={'https://image.tmdb.org/t/p/w500' + movie.poster_path} alt={movie.title} className="movie-poster" />
-        <button onClick={playTrailer}>Play Trailer</button>
-      </div>
-    );
-  }
+  const fetchTrailerUrl = async (movieId) => {
+    const response = await fetch(`https://api.themoviedb.org/3/${tvOrMovie}/${movieId}?api_key=${apiKey}&append_to_response=videos`);
+    const data = await response.json();
+    const trailerKey = data?.videos?.results[0]?.key;
+    if (trailerKey) {
+      setTrailerUrl(trailerKey);
+    }
+  };
 
   const titleSegment = (tvOrMovie === 'tv') ? "TV Show" : "Movie";
 
@@ -75,13 +81,16 @@ export default function App() {
           <button onClick={() => setTvOrMovie('tv')}>TV Shows</button>
         </div>
       </div>
-      
+
       {searchQuery && (
         <>
           <h2>Search Results</h2>
           <div className='movieContainer'>
             {movies.map((movie, index) => (
-              <MovieCard movie={movie} key={index} />
+              <div className="movie-card" key={index}>
+                <img src={'https://image.tmdb.org/t/p/w500' + movie.poster_path} alt={movie.title} className="movie-poster" />
+                <button onClick={() => playTrailer(movie.id)}>Play Trailer</button>
+              </div>
             ))}
           </div>
         </>
@@ -92,24 +101,39 @@ export default function App() {
           <h2> New Releases</h2>
           <div className='movieContainer'>
             {movies.map((movie, index) => (
-              <MovieCard movie={movie} key={index} />
+              <div className="movie-card" key={index}>
+                <img src={'https://image.tmdb.org/t/p/w500' + movie.poster_path} alt={movie.title} className="movie-poster" />
+                <button onClick={() => playTrailer(movie.id)}>Play Trailer</button>
+              </div>
             ))}
           </div>
 
           <h2>Sci-Fi {titleSegment}s</h2>
           <div className='movieContainer'>
             {sciMovies.map((movie, index) => (
-              <MovieCard movie={movie} key={index} />
+              <div className="movie-card" key={index}>
+                <img src={'https://image.tmdb.org/t/p/w500' + movie.poster_path} alt={movie.title} className="movie-poster" />
+                <button onClick={() => playTrailer(movie.id)}>Play Trailer</button>
+              </div>
             ))}
           </div>
 
           <h2>Comedy {titleSegment}s</h2>
           <div className='movieContainer'>
             {comedyMovies.map((movie, index) => (
-              <MovieCard movie={movie} key={index} />
+              <div className="movie-card" key={index}>
+                <img src={'https://image.tmdb.org/t/p/w500' + movie.poster_path} alt={movie.title} className="movie-poster" />
+                <button onClick={() => playTrailer(movie.id)}>Play Trailer</button>
+              </div>
             ))}
           </div>
         </>
+      )}
+
+      {trailerUrl && (
+        <div className="trailer-container">
+          <ReactPlayer url={`https://www.youtube.com/watch?v=${trailerUrl}`} />
+        </div>
       )}
     </div>
   );
